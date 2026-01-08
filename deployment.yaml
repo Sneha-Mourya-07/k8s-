@@ -18,7 +18,7 @@ spec:
         - name: web
           image: nginx
           ports:
-          -containerPort: 80 
+          - containerPort: 80 
 
 
 apiVersion: apps/v1
@@ -41,7 +41,7 @@ spec:
         - name: web
           image: httpd
           ports:
-          -containerPort: 80 
+          - containerPort: 80 
         
 
   
