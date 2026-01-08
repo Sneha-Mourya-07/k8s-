@@ -1,48 +1,83 @@
 apiVersion: apps/v1
+
 kind: Deployment
+
 metadata:
+
   name: web-blue
+
 spec:
+
   replicas: 3
+
   selector:
+
     matchLabels:
+
       app: web
+
       version: blue
+
   template:
+
     metadata:
+
       labels:
+
         app: web
+
         version: blue
+
     spec:
+
       containers:
-        - name: web
-          image: nginx
-          ports:
-          - containerPort: 80 
 
+      - name: web
 
-apiVersion: apps/v1
+        image: nginx
+
+        ports:
+
+        - containerPort: 80
+
+        apiVersion: apps/v1
+
 kind: Deployment
-metadata:
-  name: web-green
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: web
-      version: green
-  template:
-    metadata:
-      labels:
-        app: web
-        version:green
-    spec:
-      containers:
-        - name: web
-          image: httpd
-          ports:
-          - containerPort: 80 
-        
 
-  
-    
+metadata:
+
+  name: web-green
+
+spec:
+
+  replicas: 3
+
+  selector:
+
+    matchLabels:
+
+      app: web
+
+      version: green
+
+  template:
+
+    metadata:
+
+      labels:
+
+        app: web
+
+        version: green
+
+    spec:
+
+      containers:
+
+      - name: web
+
+        image: httpd
+
+        ports:
+
+        - containerPort: 80
