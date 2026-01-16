@@ -3,7 +3,6 @@ Library     SeleniumLibrary
 
 *** Variables ***
 ${browser}      Firefox
-
 *** Test Cases ***
 Launch browser
         [Documentation]
