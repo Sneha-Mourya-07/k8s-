@@ -1,55 +1,56 @@
-#!/data/Python_envs/Python3/bin/python3
+#! /data/Python_envs/Python3/bin/python3
 
 from ncclient import manager
 from lxml import etree
 
 # NETCONF Connection Parameters
-HOST = '172.20.0.20'
+HOST = "172.20.0.20"
 PORT = 830
-USERNAME = 'admin'
-PASSWORD = 'admin'
+USERNAME = "admin"
+PASSWORD = "admin"
 
-# NETCONF Filter to Retrieve Interface Details (Try `ietf-interfaces` first)
-INTERFACE_FILTER = """
-<filter>
-    <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"/>
-</filter>
-"""
-
-# Alternative: Cisco Native Interface Filter
-CISCO_INTERFACE_FILTER = """
+# NETCONF Filter to Retrieve the Hostname
+HOSTNAME_FILTER = """
 <filter>
     <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
-        <interface/>
+        <hostname/>
     </native>
 </filter>
 """
 
+# Create NETCONF Connection and Retrieve Hostname
 try:
     with manager.connect(
         host=HOST,
         port=PORT,
         username=USERNAME,
         password=PASSWORD,
-        device_params={'name': 'csr'},
-        hostkey_verify=False,  
-        look_for_keys=False,  
-        allow_agent=False     
+        device_params={"name": "csr"},
+        hostkey_verify=False,
+        look_for_keys=False,
+        allow_agent=False,
     ) as router:
 
-        # Retrieve the interface details
-        try:
-            interface_data = router.get_config(source='running', filter=INTERFACE_FILTER)
-        except Exception:
-            print("`ietf-interfaces` not supported, trying Cisco native model...")
-            interface_data = router.get_config(source='running', filter=CISCO_INTERFACE_FILTER)
+        # Retrieve the hostname details
+        hostname_data = router.get_config(source="running", filter=HOSTNAME_FILTER)
 
-        # Convert XML response to readable format
-        interface_xml = interface_data.data_xml.encode("utf-8")  # Convert string to bytes to avoid Unicode error
+        # Extract XML content as a string
+        hostname_xml = hostname_data.data_xml  
 
-        # Print the configuration in formatted XML
-        print("Interface Details:")
-        print(etree.tostring(etree.fromstring(interface_xml), pretty_print=True).decode())
+        # Remove XML declaration if present
+        hostname_xml = hostname_xml.encode("utf-8")  # Convert string to bytes
+
+        # Parse and format XML output
+        parsed_xml = etree.fromstring(hostname_xml)
+
+        # Extract hostname value
+        namespace = {"xe": "http://cisco.com/ns/yang/Cisco-IOS-XE-native"}
+        hostname = parsed_xml.find(".//xe:hostname", namespaces=namespace)
+
+        if hostname is not None:
+            print(f"Router Hostname: {hostname.text}")
+        else:
+            print("Hostname not found!")
 
 except Exception as e:
     print(f"Error: {e}")
