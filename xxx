@@ -11,10 +11,27 @@ RTR1_MGR = manager.connect(host='172.20.0.20',
 
 CONFIGURATION = """
 <config>
-	<native
-		xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
-		<hostname>Cisco123</hostname>
-	</native>
+<interfaces
+	xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+	<interface>
+		<name>GigabitEthernet2</name>
+		<type
+			xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ethernetCsmacd
+
+		</type>
+		<enabled>true</enabled>
+		<ipv4
+			xmlns="urn:ietf:params:xml:ns:yang:ietf-ip">
+			<address>
+				<ip>192.168.1.1</ip>
+				<netmask>255.255.255.0</netmask>
+			</address>
+		</ipv4>
+		<ipv6
+			xmlns="urn:ietf:params:xml:ns:yang:ietf-ip">
+		</ipv6>
+	</interface>
+</interfaces>
 </config>"""
 
 DATA = RTR1_MGR.edit_config(CONFIGURATION,  target = 'running')
