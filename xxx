@@ -1,47 +1,55 @@
-#!/data/Python_envs/Python3/bin/python3
+#! /data/Python_envs/Python3/bin/python3
 
 from ncclient import manager
 from lxml import etree
-from ncclient.transport.errors import SSHError, AuthenticationError, SessionCloseError
 
-# NETCONF device connection details
-HOST = '172.20.0.46'
+# NETCONF Connection Parameters
+HOST = '172.20.0.20'
 PORT = 830
 USERNAME = 'admin'
-PASSWORD = 'cisco'
+PASSWORD = 'admin'
 
-def get_running_config():
-    try:
-        # Establish NETCONF connection
-        with manager.connect(
-            host=HOST,
-            port=PORT,
-            username=USERNAME,
-            password=PASSWORD,
-            hostkey_verify=False,
-            device_params={'name': 'csr'},
-            timeout=30
-        ) as conn:
+# NETCONF Filter to Retrieve Interface Details (Try `ietf-interfaces` first)
+INTERFACE_FILTER = """
+<filter>
+    <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"/>
+</filter>
+"""
 
-            print("\nConnected to the device. Retrieving running configuration...\n")
+# Alternative: Cisco Native Interface Filter
+CISCO_INTERFACE_FILTER = """
+<filter>
+    <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+        <interface/>
+    </native>
+</filter>
+"""
 
-            # Get the full running configuration
-            config = conn.get_config(source='running')
+try:
+    with manager.connect(
+        host=HOST,
+        port=PORT,
+        username=USERNAME,
+        password=PASSWORD,
+        device_params={'name': 'csr'},
+        hostkey_verify=False,  
+        look_for_keys=False,  
+        allow_agent=False     
+    ) as router:
 
-            # Pretty-print XML
-            xml_output = etree.tostring(
-                etree.fromstring(config.xml),
-                pretty_print=True
-            ).decode()
+        # Retrieve the interface details
+        try:
+            interface_data = router.get_config(source='running', filter=INTERFACE_FILTER)
+        except Exception:
+            print("`ietf-interfaces` not supported, trying Cisco native model...")
+            interface_data = router.get_config(source='running', filter=CISCO_INTERFACE_FILTER)
 
-            print("=== Running Configuration ===\n")
-            print(xml_output)
+        # Convert XML response to readable format
+        interface_xml = interface_data.data_xml.encode("utf-8")  # Convert string to bytes to avoid Unicode error
 
-    except (SSHError, AuthenticationError, SessionCloseError) as netconf_error:
-        print(f"NETCONF transport/authentication error: {netconf_error}")
-    except Exception as general_error:
-        print(f"An error occurred: {general_error}")
+        # Print the configuration in formatted XML
+        print("Interface Details:")
+        print(etree.tostring(etree.fromstring(interface_xml), pretty_print=True).decode())
 
-if __name__ == '__main__':
-    get_running_config()
-
+except Exception as e:
+    print(f"Error: {e}")
