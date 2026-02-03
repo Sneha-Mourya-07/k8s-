@@ -1,22 +1,13 @@
-*** Settings ***
-Library     SeleniumLibrary
+from ncclient import manager
 
-*** Variables ***
-${browser}      Firefox
-*** Test Cases ***
-Launch browser
-        [Documentation]
-        ${options}=     Evaluate    sys.modules['selenium.webdriver'].FirefoxOptions()      sys
-        Call Method    ${options}    add_argument       --headless
-        Call Method    ${options}    add_argument       --no-sandbox
-        Open Browser        https://opensource-demo.orangehrmlive.com/web/index.php/auth/login     firefox     options=${options}
-        #Open Browser        https://opensource-demo.orangehrmlive.com/web/index.php/auth/login      ${browser}
-        Maximize Browser Window
-        Wait Until Element Is Visible    xpath://input[@name='username']
-        Input Text    xpath://input[@name='username']    Admin
-        Wait Until Element Is Visible    xpath://input[@name='username']
-        Input Password    xpath://input[@name='password']    admin123
-        Click Element    xpath://button[@type='submit']
-        Wait Until Element Is Visible    xpath://h6[normalize-space()='Dashboard']
-        Element Should Be Visible    xpath://h6[normalize-space()='Dashboard']
-        Close Browser
+RTR1_MGR = manager.connect(host='172.20.0.20',
+                    port=830,
+                    username='admin',
+                    password='admin',
+                    hostkey_verify=False,
+                    device_params={'name':'csr'})
+
+for RTR_Capability in RTR1_MGR.server_capabilities:
+    print (RTR_Capability)
+
+RTR1_MGR.close_session()
