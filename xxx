@@ -1,4 +1,4 @@
-#! /data/Python_envs/Python3/bin/python3
+#!/data/Python_envs/Python3/bin/python3
 
 from ncclient import manager
 from lxml import etree
