@@ -2,11 +2,11 @@
   "Cisco-IOS-XE-native:Loopback": [
     {
       "name": 29,
-      "description": "Loopback29 created via RESTCONF POST",
+      "description": "Loopback29 created via RESTCONF PATCH",
       "ip": {
         "address": {
           "primary": {
-            "address": "29.10.10.10",
+            "address": "200.100.100.100",
             "mask": "255.255.255.255"
           }
         }
@@ -14,5 +14,6 @@
     }
   ]
 }
+
 
 
