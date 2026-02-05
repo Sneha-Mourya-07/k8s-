@@ -1,17 +1,15 @@
 {
-  "ietf-interfaces:interface": [
+  "Cisco-IOS-XE-native:Loopback": [
     {
-      "name": "Loopback10",
-      "description": "Loopback 10 using IETF YANG",
-      "type": "iana-if-type:softwareLoopback",
-      "enabled": true,
-      "ietf-ip:ipv4": {
-        "address": [
-          {
-            "ip": "10.10.10.11",
-            "netmask": "255.255.255.255"
+      "name": 29,
+      "description": "Loopback29 created via RESTCONF POST",
+      "ip": {
+        "address": {
+          "primary": {
+            "address": "29.10.10.10",
+            "mask": "255.255.255.255"
           }
-        ]
+        }
       }
     }
   ]
